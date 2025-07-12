@@ -13,7 +13,9 @@ class RecipeController extends Controller
 
         $recipes = Recipe::when($search, function ($query, $search) {
             return $query->whereJsonContains('ingredients', $search);
-        })->latest()->get();
+        })
+        ->latest()
+        ->get();
 
         return response()->json($recipes);
     }
@@ -26,10 +28,8 @@ class RecipeController extends Controller
             'instructions' => 'required|string',
         ]);
 
-        $recipe = Recipe::create([
-            ...$validated,
-            'is_favorite' => $request->input('is_favorite', false),
-        ]);
+        $validated['user_id'] = auth()->id();
+        $recipe = Recipe::create([...$validated, 'user_id' => auth()->id()]);
 
         return response()->json($recipe, 201);
     }
@@ -40,7 +40,6 @@ class RecipeController extends Controller
             'title' => 'string',
             'ingredients' => 'array',
             'instructions' => 'string',
-            'is_favorite' => 'boolean',
         ]);
 
         $recipe->update($validated);
@@ -58,4 +57,37 @@ class RecipeController extends Controller
     {
         return response()->json($recipe);
     }
+
+    public function toggleFavorite(Recipe $recipe)
+    {
+        $user = auth()->user();
+        $wasFavorited = $user->hasFavorited($recipe->id);
+        
+        if ($wasFavorited) {
+            $recipe->FavoritedBy()->detach($user->id);
+        } else {
+            $recipe->FavoritedBy()->attach($user->id);
+        }
+        
+        // Refresh the recipe to get updated data
+        $recipe->refresh();
+        
+        return response()->json([
+            'message' => $wasFavorited ? 'Recipe removed from favorites' : 'Recipe added to favorites',
+            'recipe' => $recipe
+        ]);
+    }
+
+    public function myRecipes()
+    {
+        $recipes = auth()->user()->recipes()->latest()->get();
+        return response()->json($recipes);
+    }
+
+    public function favoriteRecipes()
+    {
+        $recipes = auth()->user()->favoriteRecipes()->latest()->get();
+        return response()->json($recipes);
+    }
+
 }

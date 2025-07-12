@@ -46,4 +46,29 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * User can have many "favorited" recipes. (Pivot table)
+     */
+    public function favoriteRecipes()
+    {
+        return $this->belongsToMany(Recipe::class, 'recipe_user_favorite')->withTimestamps();
+    }
+
+    /**
+     * Checks if user has favorited the recipe.
+     */
+    public function hasFavorited($recipeId): bool
+    {
+        return $this->favoriteRecipes()->where('recipe_id', $recipeId)->exists();
+    }
+
+    /**
+     * User can create many recipes.
+     */
+    public function recipes()
+    {
+        return $this->hasMany(Recipe::class);
+    }
+
 }

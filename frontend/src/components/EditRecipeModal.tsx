@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import type { Recipe } from "@/types/recipe";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface Props {
   open: boolean;
@@ -19,6 +20,7 @@ interface Props {
 export default function EditRecipeModal({ open, onClose, recipe, onUpdated }: Props) {
   const { token } = useAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [form, setForm] = useState({
     title: recipe.title,
     ingredients: recipe.ingredients.join(", "),
@@ -44,6 +46,10 @@ export default function EditRecipeModal({ open, onClose, recipe, onUpdated }: Pr
     }
 
     setLoading(true);
+    
+    // Show immediate feedback
+    toast.loading("Updating recipe...");
+    
     try {
       await api.put(
         `/recipes/${recipe.id}`,
@@ -58,10 +64,18 @@ export default function EditRecipeModal({ open, onClose, recipe, onUpdated }: Pr
           },
         }
       );
-      toast.success("Recipe updated!");
+      
+      // Invalidate all recipe-related queries to refresh the data
+      await queryClient.invalidateQueries({ queryKey: ["recipes"] });
+      await queryClient.invalidateQueries({ queryKey: ["my-recipes"] });
+      await queryClient.invalidateQueries({ queryKey: ["favorite-recipes"] });
+      
+      toast.dismiss(); // Dismiss the loading toast
+      toast.success("Recipe updated successfully!");
       onClose();
       onUpdated();
     } catch {
+      toast.dismiss(); // Dismiss the loading toast
       toast.error("Failed to update recipe.");
     } finally {
       setLoading(false);

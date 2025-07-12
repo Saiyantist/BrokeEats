@@ -6,10 +6,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import api from "@/lib/axios";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function AddRecipe() {
   const { token } = useAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const [form, setForm] = useState({
     title: "",
@@ -31,6 +33,10 @@ export default function AddRecipe() {
     }
 
     setLoading(true);
+    
+    // Show immediate feedback
+    toast.loading("Adding your recipe...");
+    
     try {
       await api.post(
         "/recipes",
@@ -45,9 +51,16 @@ export default function AddRecipe() {
           },
         }
       );
-      toast.success("Recipe added!");
+      
+      // Invalidate all recipe-related queries to refresh the data
+      await queryClient.invalidateQueries({ queryKey: ["recipes"] });
+      await queryClient.invalidateQueries({ queryKey: ["my-recipes"] });
+      
+      toast.dismiss(); // Dismiss the loading toast
+      toast.success("Recipe added successfully!");
       navigate("/");
     } catch (err: any) {
+      toast.dismiss(); // Dismiss the loading toast
       console.error(err);
       toast.error("Something went wrong while saving the recipe.");
     } finally {

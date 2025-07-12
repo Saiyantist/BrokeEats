@@ -3,8 +3,9 @@ export interface Recipe {
     title: string;
     ingredients: string[];
     instructions: string;
-    is_favorite: boolean;
+    favorited_by: string[];
     created_at: string;
     updated_at: string;
+    user_id: number;
   }
   

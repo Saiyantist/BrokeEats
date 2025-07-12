@@ -10,12 +10,47 @@ class Recipe extends Model
         'title',
         'ingredients',
         'instructions',
-        'is_favorite',
+        'user_id',
     ];
 
     protected $casts = [
         'ingredients' => 'array',
-        'is_favorite' => 'boolean',
     ];
+
+    protected $appends = ['is_favorite', 'favorited_by'];
+
+    /**
+     * Recipe belongs to a user
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Recipe is favorite of the user
+     */
+    public function getIsFavoriteAttribute(): bool
+    {
+        $user = auth()->user();
+        if (!$user) return false;
     
+        return $user->favoriteRecipes()->where('recipe_id', $this->id)->exists();
+    }
+
+    /**
+     * Get list of user emails who favorited this recipe
+     */
+    public function getFavoritedByAttribute(): array
+    {
+        return $this->FavoritedBy()->pluck('email')->toArray();
+    }
+
+    /**
+     * Recipe can have many users
+     */
+    public function FavoritedBy()
+    {
+        return $this->belongsToMany(User::class, 'recipe_user_favorite')->withTimestamps();
+    }
 }
