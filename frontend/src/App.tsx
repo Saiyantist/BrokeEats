@@ -1,22 +1,52 @@
-import { useState } from "react";
-import Home from "./pages/Home";
-import AddRecipe from "./pages/AddRecipe";
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import Navbar from './components/Navbar';
+import Home from './pages/Home';
+import AddRecipe from './pages/AddRecipe';
+import Login from './pages/auth/Login';
+import Register from './pages/auth/Register';
 
 function App() {
-  const [page, setPage] = useState<"home" | "add">("home");
-
   return (
-    <main className="min-h-screen p-6 bg-muted text-muted-foreground">
-      <h1 className="text-2xl font-bold text-primary mb-4">🍛 BrokeEats</h1>
+    <AuthProvider>
+      <Router>
+        <div className="min-h-screen bg-gray-50">
+          <Navbar />
+          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <Routes>
 
-      <div className="space-x-2 mb-6">
-        <button onClick={() => setPage("home")}>Home</button>
-        <button onClick={() => setPage("add")}>Add Recipe</button>
-      </div>
+              {/* Auth Routes */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
 
-      {page === "home" && <Home />}
-      {page === "add" && <AddRecipe />}
-    </main>
+              {/* Home Page */}
+              <Route
+                path="/"
+                element={
+                  <ProtectedRoute>
+                    <Home />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Add Recipe Page */}
+              <Route
+                path="/add-recipe"
+                element={
+                  <ProtectedRoute>
+                    <AddRecipe />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Fallback */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </main>
+        </div>
+      </Router>
+    </AuthProvider>
   );
 }
 
