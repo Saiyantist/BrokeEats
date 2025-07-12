@@ -17,13 +17,11 @@ export default function SearchFilter({ onFilter }: Props) {
   }, [search]);
 
   return (
-    <div className="space-y-2">
-      <h1 className="text-2xl font-bold">BrokeEats Recipes 🍽️</h1>
-      <Input
-        placeholder="Search by ingredient or recipe name"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
-    </div>
+    <Input
+      placeholder="Search by ingredient or recipe name"
+      value={search}
+      onChange={(e) => setSearch(e.target.value)}
+      className="w-full sm:w-80"
+    />
   );
 }

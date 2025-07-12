@@ -2,13 +2,18 @@ import { useState, useEffect } from "react";
 import type { Recipe } from "@/types/recipe";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Heart } from "lucide-react";
-// import { useNavigate } from "react-router-dom";
+import { Heart, MoreHorizontal } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import api from "@/lib/axios";
 import { toast } from "sonner";
 import EditRecipeModal from "@/components/EditRecipeModal";
 import { useQueryClient } from "@tanstack/react-query";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface Props {
   recipe: Recipe;
@@ -19,7 +24,6 @@ interface Props {
 export default function RecipeCard({ recipe, onDelete, onFavoriteToggle }: Props) {
   const { user, token } = useAuth();
   const queryClient = useQueryClient();
-  // const navigate = useNavigate();
 
   const [editing, setEditing] = useState(false);
   const [isFavorited, setIsFavorited] = useState(
@@ -34,6 +38,10 @@ export default function RecipeCard({ recipe, onDelete, onFavoriteToggle }: Props
     setFavoriteCount(recipe.favorited_by.length);
   }, [recipe, user]);
 
+  /**
+   * Toggle the favorite status of a recipe
+   * @returns void
+   */
   const handleToggleFavorite = async () => {
     if (!user || !token) {
       toast.error("Please log in to favorite recipes.");
@@ -77,6 +85,10 @@ export default function RecipeCard({ recipe, onDelete, onFavoriteToggle }: Props
     }
   };
 
+  /**
+   * Delete a recipe
+   * @returns void
+   */
   const handleDelete = async () => {
     if (!confirm("Are you sure you want to delete this recipe?")) return;
 
@@ -104,32 +116,36 @@ export default function RecipeCard({ recipe, onDelete, onFavoriteToggle }: Props
 
   return (
     <>
-      <Card className="mb-4">
-        <CardContent className="p-4 space-y-2">
+      <Card className="mb-4 p-2">
+        <CardContent className="p-4 space-y-4">
           <div className="flex justify-between items-start">
+            {/* Title */}
             <h2 className="text-xl font-semibold text-primary">{recipe.title}</h2>
-            <div className="flex items-center gap-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleToggleFavorite}
-                disabled={favoriteLoading}
-                className="p-1 h-auto"
-              >
-                <Heart
-                  className={`h-5 w-5 ${
-                    isFavorited ? "fill-red-500 text-red-500" : "text-gray-400"
-                  } ${favoriteLoading ? "animate-pulse" : ""}`}
-                />
-              </Button>
-              {favoriteCount > 0 && (
-                <span className="text-sm text-muted-foreground">
-                  {favoriteCount}
-                </span>
-              )}
-            </div>
-          </div>
 
+              {/* Favorite Button */}
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleToggleFavorite}
+                  disabled={favoriteLoading}
+                  className="p-1 h-auto"
+                >
+                  <Heart
+                    className={`h-5 w-5 ${
+                      isFavorited ? "fill-red-500 text-red-500" : "text-gray-400"
+                    } ${favoriteLoading ? "animate-pulse" : ""}`}
+                  />
+                </Button>
+                {favoriteCount > 0 && (
+                  <span className="text-sm text-muted-foreground">
+                    {favoriteCount}
+                  </span>
+                )}
+              </div>
+            </div>
+
+          {/* Ingredients */}
           <div>
             <p className="text-sm font-medium">Ingredients:</p>
             <ul className="list-disc list-inside text-sm text-muted-foreground">
@@ -139,25 +155,38 @@ export default function RecipeCard({ recipe, onDelete, onFavoriteToggle }: Props
             </ul>
           </div>
 
+          {/* Instructions */}
           <div>
             <p className="text-sm font-medium">Instructions:</p>
             <p className="text-sm text-muted-foreground">{recipe.instructions}</p>
           </div>
 
-          {/* Controls */}
           {(user && user.id === recipe.user_id) && (
-            <div className="flex gap-2 pt-4">
-              <Button variant="outline" size="sm" onClick={() => {
-                setEditing(true);
-                // navigate(`/edit/${recipe.id}`);
-              }}>
-                Edit
-              </Button>
-              <Button variant="destructive" size="sm" onClick={handleDelete}>
-                Delete
-              </Button>
-            </div>
+          <div className="flex justify-end">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="p-1 h-auto">
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => {
+                  setEditing(true);
+                }}>
+                  Edit
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={handleDelete}
+                  variant="destructive"
+                  className="text-red-600 focus:text-red-600 focus:bg-red-50"
+                >
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
           )}
+
         </CardContent>
       </Card>
       <EditRecipeModal

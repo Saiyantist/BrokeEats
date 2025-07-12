@@ -52,12 +52,15 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 -mt-10">
+      <div className="max-w-md w-full space-y-4">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900">🍛 BrokeEats</h1>
-          <p className="mt-2 text-sm text-gray-600">
-            Create your account
+          <div className="flex items-center justify-center gap-2">
+            <img src="/logo.png" alt="BrokeEats" className="w-16 h-16" />
+            <h1 className="text-3xl font-bold bg-black text-white rounded-md shadow px-2 py-1">BrokeEats</h1>
+          </div>
+          <p className="mt-2 text-sm text-gray-600 italic">
+            Create your account to start sharing and discovering recipes
           </p>
         </div>
 
@@ -164,7 +167,7 @@ export default function Register() {
                 Already have an account?{' '}
                 <Link
                   to="/login"
-                  className="font-medium text-blue-600 hover:text-blue-500"
+                  className="font-medium text-primary hover:text-primary/50"
                 >
                   Sign in
                 </Link>

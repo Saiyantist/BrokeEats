@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -106,11 +106,13 @@ export default function EditRecipeModal({ open, onClose, recipe, onUpdated }: Pr
             value={form.instructions}
             onChange={(e) => setForm({ ...form, instructions: e.target.value })}
           />
+        </div>
 
+        <DialogFooter className="flex justify-end">
           <Button onClick={handleSubmit} disabled={loading}>
             {loading ? "Updating..." : "Save Changes"}
           </Button>
-        </div>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

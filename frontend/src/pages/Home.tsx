@@ -11,45 +11,58 @@ export default function Home() {
   const all = useRecipes();
   const myRecipes = useMyRecipes();
   const favoriteRecipes = useFavoriteRecipes();
+  const [globalSearch, setGlobalSearch] = useState("");
 
   return (
-    <Tabs defaultValue="all" className="w-full">
-      <TabsList className="mb-4">
-        <TabsTrigger value="all">All Recipes</TabsTrigger>
-        <TabsTrigger value="myRecipes">My Recipes</TabsTrigger>
-        <TabsTrigger value="favoriteRecipes">My Favorites</TabsTrigger>
-      </TabsList>
+    <div className="w-full space-y-6">
+      {/* Header with title and search */}
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+        <h1 className="text-3xl font-bold mr-4 py-2 text-primary">BrokeEats Recipes 🍽️</h1>
+        <SearchFilter onFilter={setGlobalSearch}/>
+      </div>
 
-      <TabsContent value="all">
-        <RecipeList 
-          data={all.data} 
-          isLoading={all.isLoading} 
-          error={all.error} 
-          onDelete={all.refetch}
-          onFavoriteToggle={all.refetch}
-        />
-      </TabsContent>
+      {/* Tabs */}
+      <Tabs defaultValue="all" className="w-full">
+        <TabsList className="mb-6">
+          <TabsTrigger value="all">All Recipes</TabsTrigger>
+          <TabsTrigger value="myRecipes">My Recipes</TabsTrigger>
+          <TabsTrigger value="favoriteRecipes">My Favorites</TabsTrigger>
+        </TabsList>
 
-      <TabsContent value="myRecipes">
-        <RecipeList 
-          data={myRecipes.data} 
-          isLoading={myRecipes.isLoading} 
-          error={myRecipes.error} 
-          onDelete={myRecipes.refetch}
-          onFavoriteToggle={myRecipes.refetch}
-        />
-      </TabsContent>
+        <TabsContent value="all">
+          <RecipeList 
+            data={all.data} 
+            isLoading={all.isLoading} 
+            error={all.error} 
+            onDelete={all.refetch}
+            onFavoriteToggle={all.refetch}
+            searchTerm={globalSearch}
+          />
+        </TabsContent>
 
-      <TabsContent value="favoriteRecipes">
-        <RecipeList 
-          data={favoriteRecipes.data} 
-          isLoading={favoriteRecipes.isLoading} 
-          error={favoriteRecipes.error} 
-          onDelete={favoriteRecipes.refetch}
-          onFavoriteToggle={favoriteRecipes.refetch}
-        />
-      </TabsContent>
-    </Tabs>
+        <TabsContent value="myRecipes">
+          <RecipeList 
+            data={myRecipes.data} 
+            isLoading={myRecipes.isLoading} 
+            error={myRecipes.error} 
+            onDelete={myRecipes.refetch}
+            onFavoriteToggle={myRecipes.refetch}
+            searchTerm={globalSearch}
+          />
+        </TabsContent>
+
+        <TabsContent value="favoriteRecipes">
+          <RecipeList 
+            data={favoriteRecipes.data} 
+            isLoading={favoriteRecipes.isLoading} 
+            error={favoriteRecipes.error} 
+            onDelete={favoriteRecipes.refetch}
+            onFavoriteToggle={favoriteRecipes.refetch}
+            searchTerm={globalSearch}
+          />
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 }
 
@@ -59,12 +72,14 @@ function RecipeList({
   error,
   onDelete,
   onFavoriteToggle,
+  searchTerm,
 }: {
   data?: Recipe[];
   isLoading: boolean;
   error: any;
   onDelete?: () => void;
   onFavoriteToggle?: () => void;
+  searchTerm: string;
 }) {
   const [filtered, setFiltered] = useState(data ?? []);
 
@@ -81,8 +96,13 @@ function RecipeList({
     setFiltered(result);
   };
 
-  // Keep data in sync
-  useEffect(() => { if (data) { setFiltered(data) }}, [data]);
+  // Keep data in sync and apply search filter
+  useEffect(() => { 
+    if (data) { 
+      setFiltered(data);
+      handleSearch(searchTerm);
+    }
+  }, [data, searchTerm]);
 
   if (isLoading) return <p>Loading recipes...</p>;
   if (error) return <p className="text-red-500">Something went wrong!</p>;
@@ -90,7 +110,6 @@ function RecipeList({
 
   return (
     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <SearchFilter onFilter={handleSearch} />
       {filtered.map((recipe) => (
         <RecipeCard 
           key={recipe.id} 

@@ -9,34 +9,44 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
+import { CirclePlus, UserRound } from 'lucide-react';
 
 export default function Navbar() {
-  const { user, logout } = useAuth();
+  const { user, logout, isLoading } = useAuth();
 
   const handleLogout = () => {
     logout();
   };
 
   return (
-    <nav className="bg-white shadow-sm border-b">
+    <nav className="sticky top-0 z-50 bg-white shadow-sm border-b">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
 
           {/* Brand - Home Page Link */}
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-2">
-              <span className="text-2xl">🍛</span>
-              <span className="text-xl font-bold text-gray-900">BrokeEats</span>
+              <img src="/logo.png" alt="BrokeEats" className="w-8 h-8" />
+              <span className="text-xl font-bold bg-black text-white rounded-md shadow px-2 py-1">BrokeEats</span>
             </Link>
           </div>
 
           
           <div className="flex items-center space-x-4">
-            {user ? (
+            {isLoading ? (
+              // Show loading state - you can customize this
+              <div className="flex items-center space-x-2">
+                <div className="w-28 h-8 bg-gray-200 rounded animate-pulse"></div>
+                <div className="w-28 h-8 bg-gray-200 rounded animate-pulse"></div>
+              </div>
+            ) : user ? (
               <>
                 {/* Add Recipe Button */}
                 <Link to="/add-recipe">
-                  <Button variant="outline">Add Recipe</Button>
+                  <Button variant="outline" className="bg-primary text-white">
+                    <CirclePlus/>
+                    Add Recipe
+                    </Button>
                 </Link>
 
                 {/* User Profile Dropdown */}
@@ -44,7 +54,7 @@ export default function Navbar() {
                   <DropdownMenuTrigger asChild>
                     {/* User Name */}
                     <Button variant="ghost" className="flex items-center space-x-2">
-                      <span>👤 {user.name}</span>
+                      <span><UserRound/></span>{user.name}
                     </Button>
                   </DropdownMenuTrigger>
                   

@@ -69,7 +69,7 @@ export default function AddRecipe() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 space-y-4">
+    <div className="sm:max-w-xl max-w-md mx-auto mt-10 space-y-8 bg-white py-10 px-8 rounded-md shadow">
       <h1 className="text-2xl font-bold">Add Recipe</h1>
 
       <Input
