@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import AddRecipe from './pages/AddRecipe';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
+import { Toaster } from './components/ui/sonner';
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function App() {
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </main>
+          <Toaster />
         </div>
       </Router>
     </AuthProvider>

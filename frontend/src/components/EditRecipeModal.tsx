@@ -1,0 +1,103 @@
+import { useEffect, useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import api from "@/lib/axios";
+import { toast } from "sonner";
+import type { Recipe } from "@/types/recipe";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+
+interface Props {
+  open: boolean;
+  onClose: () => void;
+  recipe: Recipe;
+  onUpdated: () => void;
+}
+
+export default function EditRecipeModal({ open, onClose, recipe, onUpdated }: Props) {
+  const { token } = useAuth();
+  const navigate = useNavigate();
+  const [form, setForm] = useState({
+    title: recipe.title,
+    ingredients: recipe.ingredients.join(", "),
+    instructions: recipe.instructions,
+  });
+
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      setForm({
+        title: recipe.title,
+        ingredients: recipe.ingredients.join(", "),
+        instructions: recipe.instructions,
+      });
+    }
+  }, [open, recipe]);
+
+  const handleSubmit = async () => {
+    if (!form.title || !form.ingredients || !form.instructions) {
+      toast.error("All fields are required.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await api.put(
+        `/recipes/${recipe.id}`,
+        {
+          title: form.title,
+          ingredients: form.ingredients.split(",").map((i) => i.trim()),
+          instructions: form.instructions,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      toast.success("Recipe updated!");
+      onClose();
+      onUpdated();
+    } catch {
+      toast.error("Failed to update recipe.");
+    } finally {
+      setLoading(false);
+      navigate("/");
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Edit Recipe</DialogTitle>
+        </DialogHeader>
+
+        <div className="space-y-4">
+          <Input
+            placeholder="Title"
+            value={form.title}
+            onChange={(e) => setForm({ ...form, title: e.target.value })}
+          />
+          <Input
+            placeholder="Ingredients (comma-separated)"
+            value={form.ingredients}
+            onChange={(e) => setForm({ ...form, ingredients: e.target.value })}
+          />
+          <Textarea
+            placeholder="Instructions"
+            value={form.instructions}
+            onChange={(e) => setForm({ ...form, instructions: e.target.value })}
+          />
+
+          <Button onClick={handleSubmit} disabled={loading}>
+            {loading ? "Updating..." : "Save Changes"}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
