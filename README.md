@@ -1,4 +1,5 @@
 # BrokeEats
+![BrokeEats Logo](frontend/public/logo.png)
 **Share what you eat. Even if you're broke.**
 
 A recipe sharing app made with React and Laravel, for college students who want to save and share their favorite and budget-friendly meals.
@@ -54,7 +55,7 @@ I used a full-stack architecture combining **Laravel 12** (API backend) and **Re
 
 ---
 
-## 3. External Resources
+## 3. External Resources 🌐
 
 - [Laravel Sanctum Docs](https://laravel.com/docs/sanctum)
 - [shadcn/ui components](https://ui.shadcn.com/docs/components)
@@ -62,7 +63,7 @@ I used a full-stack architecture combining **Laravel 12** (API backend) and **Re
 
 ---
 
-## 4. Setup Instructions
+## 4. Setup Instructions 🏗️
 
 ### Prerequisites
 
@@ -124,7 +125,7 @@ npm run dev
 
 --- 
 
-## User Guide
+## User Guide 💡
 - Create a user via Register page
 - Login to access features
 - Add, edit, or delete your own recipes
