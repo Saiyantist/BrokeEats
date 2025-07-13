@@ -7,6 +7,10 @@ import SearchFilter from "@/components/SearchFilter";
 import type { Recipe } from "@/types/recipe";
 import { useState, useEffect } from "react";
 
+/**
+ * Main home page component with tabbed recipe views.
+ * Displays all recipes, user's recipes, and favorite recipes
+ */
 export default function Home() {
   const all = useRecipes();
   const myRecipes = useMyRecipes();
@@ -66,6 +70,10 @@ export default function Home() {
   );
 }
 
+/**
+ * Reusable component to display filtered recipe list
+ * Handles search filtering, loading states, and recipe actions
+ */
 function RecipeList({
   data,
   isLoading,
@@ -83,6 +91,10 @@ function RecipeList({
 }) {
   const [filtered, setFiltered] = useState(data ?? []);
 
+  /**
+   * Filter recipes by title and ingredients.
+   * Case-insensitive search across recipe content
+   */
   const handleSearch = (search: string) => {
     if (!data) return;
     if (!search.trim()) return setFiltered(data);
@@ -104,6 +116,7 @@ function RecipeList({
     }
   }, [data, searchTerm]);
 
+  // Handle loading and error states
   if (isLoading) return <p>Loading recipes...</p>;
   if (error) return <p className="text-red-500">Something went wrong!</p>;
   if (!data || data.length === 0) return <p className="text-muted-foreground">No recipes found.</p>;

@@ -9,6 +9,10 @@ import { Input } from '../../components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../../components/ui/form';
 
+/**
+ * Form validation schema with password confirmation check.
+ * Ensures passwords match and meet minimum requirements.
+ */
 const registerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Please enter a valid email address'),
@@ -21,12 +25,17 @@ const registerSchema = z.object({
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
+/**
+ * User registration page with form validation and error handling
+ * Redirects to home page on successful registration
+ */
 export default function Register() {
   const [error, setError] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
 
+  // Initialize form with validation and default values
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -37,13 +46,17 @@ export default function Register() {
     },
   });
 
+  /**
+   * Handle form submission with registration logic
+   * Clears previous errors and shows loading state during API call
+   */
   const onSubmit = async (data: RegisterFormData) => {
     setError('');
     setIsLoading(true);
     
     try {
       await register(data);
-      navigate('/');
+      navigate('/'); // Redirect to home page on success
     } catch (err: any) {
       setError(err.message || 'Registration failed');
     } finally {
@@ -54,6 +67,7 @@ export default function Register() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 -mt-10">
       <div className="max-w-md w-full space-y-4">
+        {/* Header with logo and description */}
         <div className="text-center">
           <div className="flex items-center justify-center gap-2">
             <img src="/logo.png" alt="BrokeEats" className="w-16 h-16" />
@@ -74,12 +88,14 @@ export default function Register() {
           <CardContent>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                {/* Display registration errors */}
                 {error && (
                   <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
                     {error}
                   </div>
                 )}
 
+                {/* Full Name */}
                 <FormField
                   control={form.control}
                   name="name"
@@ -98,6 +114,7 @@ export default function Register() {
                   )}
                 />
 
+                {/* Email */}
                 <FormField
                   control={form.control}
                   name="email"
@@ -116,6 +133,7 @@ export default function Register() {
                   )}
                 />
 
+                {/* Password */}
                 <FormField
                   control={form.control}
                   name="password"
@@ -134,6 +152,7 @@ export default function Register() {
                   )}
                 />
 
+                {/* Confirm Password */}
                 <FormField
                   control={form.control}
                   name="password_confirmation"
@@ -152,16 +171,18 @@ export default function Register() {
                   )}
                 />
 
+                {/* Submit button */}
                 <Button
                   type="submit"
                   className="w-full"
                   disabled={isLoading}
                 >
-                  {isLoading ? 'Creating account...' : 'Create Account'}
+                  {isLoading ? 'Creating account...' : 'Create Account'} {/* Loading state for UX */}
                 </Button>
               </form>
             </Form>
 
+            {/* Link to login page for existing users */}
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600">
                 Already have an account?{' '}

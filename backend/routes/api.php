@@ -5,15 +5,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
 // =========================
-/** Guest Routes */
-// =========================
-
-/** Authentication Routes */
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
-
-
-// =========================
 /** Authenticated Routes */
 // =========================
 Route::middleware('auth:sanctum')->group(function () {
@@ -33,7 +24,13 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 // =========================
-/** Public Recipe Routes - Separated for conflict resolution */
+/** Guest Routes */
 // =========================
+
+/** Authentication Routes */
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+
+/** Public Recipe Routes - Separated for conflict resolution */
 Route::get('/recipes', [RecipeController::class, 'index']);
 Route::get('/recipes/{recipe}', [RecipeController::class, 'show']); // Individual Recipe Route - Must come after specific routes

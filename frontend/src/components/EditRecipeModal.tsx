@@ -47,7 +47,7 @@ export default function EditRecipeModal({ open, onClose, recipe, onUpdated }: Pr
 
     setLoading(true);
     
-    // Show immediate feedback
+    // Show immediate feedback for UX
     toast.loading("Updating recipe...");
     
     try {
@@ -70,12 +70,12 @@ export default function EditRecipeModal({ open, onClose, recipe, onUpdated }: Pr
       await queryClient.invalidateQueries({ queryKey: ["my-recipes"] });
       await queryClient.invalidateQueries({ queryKey: ["favorite-recipes"] });
       
-      toast.dismiss(); // Dismiss the loading toast
+      toast.dismiss();
       toast.success("Recipe updated successfully!");
       onClose();
       onUpdated();
     } catch {
-      toast.dismiss(); // Dismiss the loading toast
+      toast.dismiss();
       toast.error("Failed to update recipe.");
     } finally {
       setLoading(false);
@@ -90,6 +90,7 @@ export default function EditRecipeModal({ open, onClose, recipe, onUpdated }: Pr
           <DialogTitle>Edit Recipe</DialogTitle>
         </DialogHeader>
 
+        {/* Form Content */}
         <div className="space-y-4">
           <Input
             placeholder="Title"

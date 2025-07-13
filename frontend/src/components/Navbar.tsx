@@ -34,7 +34,7 @@ export default function Navbar() {
           
           <div className="flex items-center space-x-4">
             {isLoading ? (
-              // Show loading state - you can customize this
+              // Show loading state
               <div className="flex items-center space-x-2">
                 <div className="w-28 h-8 bg-gray-200 rounded animate-pulse"></div>
                 <div className="w-28 h-8 bg-gray-200 rounded animate-pulse"></div>

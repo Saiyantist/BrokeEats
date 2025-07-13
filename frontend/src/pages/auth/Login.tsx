@@ -6,10 +6,13 @@ import { z } from 'zod';
 import { useAuth } from '../../contexts/AuthContext';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
-// import { Label } from '../../components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../../components/ui/form';
 
+/**
+ * Login form validation schema using Zod.
+ * Ensures email is valid and password is not empty.
+ */
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
   password: z.string().min(1, 'Password is required'),
@@ -17,6 +20,10 @@ const loginSchema = z.object({
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
+/**
+ * Login page component with form validation and authentication.
+ * Handles login state, error messages, and navigation.
+ */
 export default function Login() {
   const [error, setError] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
@@ -48,6 +55,8 @@ export default function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 -mt-20">
       <div className="max-w-md w-full space-y-4">
+
+        {/* Header */}
         <div className="text-center">
           <div className="flex items-center justify-center gap-2">
             <img src="/logo.png" alt="BrokeEats" className="w-16 h-16" />
@@ -58,6 +67,7 @@ export default function Login() {
           </p>
         </div>
 
+        {/* Form */}
         <Card>
           <CardHeader>
             <CardTitle>Sign In</CardTitle>
@@ -74,6 +84,7 @@ export default function Login() {
                   </div>
                 )}
 
+                {/* Email */}
                 <FormField
                   control={form.control}
                   name="email"
@@ -92,6 +103,7 @@ export default function Login() {
                   )}
                 />
 
+                {/* Password */}
                 <FormField
                   control={form.control}
                   name="password"
@@ -110,16 +122,18 @@ export default function Login() {
                   )}
                 />
 
+                {/* Submit button */}
                 <Button
                   type="submit"
                   className="w-full"
                   disabled={isLoading}
                 >
-                  {isLoading ? 'Signing in...' : 'Sign In'}
+                  {isLoading ? 'Signing in...' : 'Sign In'} {/* Loading state for UX */}
                 </Button>
               </form>
             </Form>
 
+            {/* Register Link */}
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600">
                 Don't have an account?{' '}

@@ -1,3 +1,7 @@
+/**
+ * Recipe data structure (returned from API)
+ * Contains recipe details and metadata
+ */
 export interface Recipe {
     id: number;
     title: string;

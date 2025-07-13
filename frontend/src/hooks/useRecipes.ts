@@ -2,18 +2,23 @@ import { useQuery } from "@tanstack/react-query";
 import api from "../lib/axios";
 import type { Recipe } from "../types/recipe";
 
-// API Call Function (GET /api/recipes?ingredient=egg)
+/**
+ * Fetch recipes from API with optional ingredient filter.
+ */
 const fetchRecipes = async (ingredient?: string): Promise<Recipe[]> => {
   const res = await api.get("/recipes", {
-    params: ingredient ? { ingredient } : {}, // dynamic query param
+    params: ingredient ? { ingredient } : {}, // Add ingredient as query param if provided
   });
   return res.data;
 };
 
-// Custom hook that wraps the React Query logic
+/**
+ * Custom hook to fetch and cache recipes.
+ * Optionally filter by ingredient on the server side
+ */
 export const useRecipes = (ingredient?: string) => {
   return useQuery({
-    queryKey: ["recipes", ingredient], // Caches result by key+ingredient
-    queryFn: () => fetchRecipes(ingredient), // What to run when fetching
+    queryKey: ["recipes", ingredient], // Cache by recipes + ingredient filter
+    queryFn: () => fetchRecipes(ingredient), // Fetch function
   });
 };

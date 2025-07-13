@@ -8,11 +8,16 @@ import api from "@/lib/axios";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 
+/**
+ * Add new recipe page with form handling and API integration.
+ * Refreshes recipe lists after successful submission.
+ */
 export default function AddRecipe() {
   const { token } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
+  // Form state for recipe data
   const [form, setForm] = useState({
     title: "",
     ingredients: "",
@@ -21,12 +26,19 @@ export default function AddRecipe() {
 
   const [loading, setLoading] = useState(false);
 
+  /**
+   * Update form state when input values change
+   */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  /**
+   * Submit recipe to API with validation and error handling
+   * Converts comma-separated ingredients to array and refreshes cache
+   */
   const handleSubmit = async () => {
-
+    // Validate all fields are filled
     if (!form.title || !form.ingredients || !form.instructions) {
       toast.error("Please fill in all fields.");
       return;
@@ -34,7 +46,7 @@ export default function AddRecipe() {
 
     setLoading(true);
     
-    // Show immediate feedback
+    // Show immediate feedback for better UX
     toast.loading("Adding your recipe...");
     
     try {
@@ -42,7 +54,7 @@ export default function AddRecipe() {
         "/recipes",
         {
           title: form.title,
-          ingredients: form.ingredients.split(",").map((i) => i.trim()),
+          ingredients: form.ingredients.split(",").map((i) => i.trim()), // Convert to array and trim whitespace
           instructions: form.instructions,
         },
         {
@@ -52,15 +64,15 @@ export default function AddRecipe() {
         }
       );
       
-      // Invalidate all recipe-related queries to refresh the data
+      // Refresh all recipe-related data to show new recipe
       await queryClient.invalidateQueries({ queryKey: ["recipes"] });
       await queryClient.invalidateQueries({ queryKey: ["my-recipes"] });
       
-      toast.dismiss(); // Dismiss the loading toast
+      toast.dismiss(); // Clear loading toast
       toast.success("Recipe added successfully!");
-      navigate("/");
+      navigate("/"); // Return to home page
     } catch (err: any) {
-      toast.dismiss(); // Dismiss the loading toast
+      toast.dismiss(); // Clear loading toast
       console.error(err);
       toast.error("Something went wrong while saving the recipe.");
     } finally {
@@ -72,6 +84,7 @@ export default function AddRecipe() {
     <div className="sm:max-w-xl max-w-md mx-auto mt-10 space-y-8 bg-white py-10 px-8 rounded-md shadow">
       <h1 className="text-2xl font-bold">Add Recipe</h1>
 
+      {/* Recipe title  */}
       <Input
         name="title"
         placeholder="Recipe Title"
@@ -79,6 +92,7 @@ export default function AddRecipe() {
         onChange={handleChange}
       />
 
+      {/* Ingredients - comma-separated */}
       <Input
         name="ingredients"
         placeholder="Ingredients (comma-separated)"
@@ -86,6 +100,7 @@ export default function AddRecipe() {
         onChange={handleChange}
       />
 
+      {/* Recipe instructions */}
       <Textarea
         name="instructions"
         placeholder="Instructions"
@@ -93,8 +108,9 @@ export default function AddRecipe() {
         onChange={handleChange}
       />
 
+      {/* Submit button with loading state */}
       <Button onClick={handleSubmit} disabled={loading}>
-        {loading ? "Saving..." : "Submit Recipe"}
+        {loading ? "Saving..." : "Submit Recipe"} {/* Loading state for UX */}
       </Button>
     </div>
   );

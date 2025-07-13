@@ -6,9 +6,14 @@ interface ProtectedRouteProps {
   children: ReactNode;
 }
 
+/**
+ * Route protection component that checks authentication status.
+ * Shows loading spinner during auth check, redirects to login if not authenticated
+ */
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { user, isLoading } = useAuth();
 
+  // Show loading spinner while checking authentication status
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -17,9 +22,11 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
     );
   }
 
+  // Redirect to login if user is not authenticated
   if (!user) {
     return <Navigate to="/login" replace />;
   }
 
+  // Render protected content if user is authenticated
   return <>{children}</>;
 } 

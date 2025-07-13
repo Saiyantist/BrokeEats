@@ -11,7 +11,7 @@ export default function SearchFilter({ onFilter }: Props) {
   useEffect(() => {
     const timeout = setTimeout(() => {
       onFilter(search);
-    }, 200); // debounce for a smoother experience
+    }, 100); // debounce for a smoother experience
 
     return () => clearTimeout(timeout);
   }, [search]);
